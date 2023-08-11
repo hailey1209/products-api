@@ -1,6 +1,5 @@
 const express = require('express')
 const Product = require('../models/Products')
-const User = require('../models/Users')
 const Ex_asyncHandler = require('express-async-handler')
 const { isAuth } = require('../../auth')
 
@@ -67,7 +66,7 @@ router.post('/', isAuth, Ex_asyncHandler(async (req, res, next)=> {
     }
 }))
 
-//특정상품 변경
+//특정 상품정보 변경(by item_id)
 router.put('/:id', isAuth, Ex_asyncHandler( async (req, res, next)=> {
     const product = await Product.findOne({
         user: req.user._id,

@@ -10,7 +10,7 @@ const user_schema = new Schema({
     email:{
         type: String,
         required: true,
-        unique: true,
+        unique: true, //이메일 중복 방지
     },
     userId: {
         type: String,

@@ -18,7 +18,7 @@ router.post('/register', Ex_asyncHandler(async (req, res, next)=>{
     const newUser = await user.save()
 
     if(!newUser){
-        res.status(401).json({ code: 401, message: 'Invalid User Data'})
+        res.status(401).json({ code: 401, message: '유효하지 않은 사용자 입니다.'})
     }else{
         const {name, email, userId, isAdmin, createdAt} = newUser
         res.json({
@@ -87,4 +87,4 @@ router.delete('/:id',isAuth, Ex_asyncHandler(async (req, res, next)=> {
     }
 }))
 
-module.exports = router //이거 없으면 데이터 생성 안됨
+module.exports = router //이거 없으면 index.js에서 실행 안됨

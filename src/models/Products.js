@@ -22,7 +22,7 @@ const product_Schema = new Schema({
         required: true,
         trim: true,
     },
-    user: {
+    user: { //생성한 사용자의 id
         type: ObjectId,
         required: true,
         ref: 'User'
@@ -37,13 +37,5 @@ const product_Schema = new Schema({
     }
 })
 
-const Product = mongoose.model('newProduct', product_Schema)
+const Product = mongoose.model('newProduct', product_Schema) //스키마 모델로 저장해줌
 module.exports = Product
-
-// const product = new Product({
-//     category: '가전',
-//     name: '이름',
-//     user: '123456789012345678901234',
-//     imgURL: 'https://www.aaaaa.com/gjdjdjf.png',
-// })
-// product.save().then(()=> console.log('product created'))

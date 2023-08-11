@@ -3,7 +3,6 @@ const app = express()
 const cors = require('cors')
 const looger = require('morgan')
 const mongoose = require('mongoose')
-const axios = require('axios') //외부 api 사용시 사용
 const config = require('./config')
 
 
