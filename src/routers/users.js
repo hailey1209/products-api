@@ -2,7 +2,6 @@ const express = require('express')
 const User = require('../models/Users')
 const Ex_asyncHandler = require('express-async-handler')
 const { generateToken, isAuth } = require('../../auth')
-const { MongoUnexpectedServerResponseError } = require('mongodb')
 
 const router = express.Router() //라우터 정의
 
