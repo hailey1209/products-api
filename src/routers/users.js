@@ -30,7 +30,7 @@ router.post('/register', Ex_asyncHandler(async (req, res, next)=>{
 }))
 
 //로그인
-router.post('/login', isAuth, Ex_asyncHandler(async (req, res, next)=>{
+router.post('/login', Ex_asyncHandler(async (req, res, next)=>{
     const user = await User.findOne({
         email: req.body.email,
         password: req.body.password

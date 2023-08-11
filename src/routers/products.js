@@ -46,6 +46,7 @@ router.post('/', isAuth, Ex_asyncHandler(async (req, res, next)=> {
             name: req.body.name,
             imgURL: req.body.imgURL,
             user: req.user._id,
+            description: req.body.description
         })
         const newProduct = await product.save()
         
@@ -101,5 +102,95 @@ router.delete('/:id', isAuth, Ex_asyncHandler(async (req, res, next)=> {
         res.status(204).json({ code: 204, message: '해당 상품이 삭제되었습니다.'})
     }
 }))
+
+//관리자 권한 사용자 데이터 그룹핑 (by field)
+router.get('/group/:field', isAuth, Ex_asyncHandler(async (req, res, next)=> {
+    if(!req.user.isAdmin){
+        res.status(401).json({code: 401, message: '해당 서비스에 관한 권한이 없습니다.'})
+    }else{
+        const documents = await Product.aggregate([
+            {
+                $group: {
+                    _id: `$${req.params.field}`,
+                    count: {$sum: 1}
+                }
+            }
+        ])
+
+        console.log(`Num of Group: ${documents.length}`)
+        documents.sort( (doc1, doc2) => doc1._id - doc2._id)
+        res.json({code: 200, documents})
+    }
+}))
+//관리자 권한 사용자 데이터 그룹핑 (by date)
+router.get('/group/date/:field', isAuth, Ex_asyncHandler(async (req, res, next)=> {
+    if(!req.user.isAdmin){
+        res.status(401).json({code: 401, message: '해당 서비스에 관한 권한이 없습니다.'})
+    }else{
+        if(req.params.field === 'createdAt'|| req.params.field === 'lastModifiedAt'){
+            const documents = await Product.aggregate([
+                {
+                    $group: {
+                        _id: {  year: {$year: `$${req.params.field}`}, 
+                                month: {$month: `$${req.params.field}`}
+                             },
+                        count: {$sum: 1}
+                    }
+                }
+            ])
+    
+            console.log(`Num of Group: ${documents.length}`)
+            documents.sort( (doc1, doc2) => doc1._id - doc2._id)
+            res.json({code: 200, documents})
+        }
+    }
+}))
+
+//일반 사용자 데이터 그룹핑(by field)
+router.get('/group/mine/:field', isAuth, Ex_asyncHandler(async (req, res, next)=> {
+    const documents = await Product.aggregate([
+        {
+            $match: {
+                user: new ObjectId(req.user._id)
+            }
+        },
+        {
+            $group: {
+                _id: `$${req.params.field}`,
+                count: {$sum: 1}
+            }
+        }
+    ])
+
+    console.log(`Num of Group: ${documents.length}`)
+    documents.sort( (doc1, doc2) => doc1._id - doc2._id)
+    res.json({code: 200, documents})
+}))
+
+//일반 사용자 데이터 그룹핑(by date)
+router.get('/group/mine/date/:field', isAuth, Ex_asyncHandler(async (req, res, next)=> {
+    if(req.params.field === 'createdAt'|| req.params.field === 'lastModifiedAt'){
+        const documents = await Product.aggregate([
+            {
+                $match: {
+                    user: new ObjectId(req.user._id)
+                }
+            },
+            {
+                $group: {
+                    _id: {  year: {$year: `$${req.params.field}`}, 
+                            month: {$month: `$${req.params.field}`}
+                         },
+                    count: {$sum: 1}
+                }
+            }
+        ])
+    
+        console.log(`Num of Group: ${documents.length}`)
+        documents.sort( (doc1, doc2) => doc1._id - doc2._id)
+        res.json({code: 200, documents})
+    }
+}))
+
 
 module.exports = router
