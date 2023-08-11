@@ -54,13 +54,38 @@ router.post('/logout', (req, res, next) => {
 })
 
 //사용자정보 변경
-router.put('/:id', (req, res, next)=> {
-    res.json('사용자정보 변경')
-})
+router.put('/:id', isAuth, Ex_asyncHandler(async (req, res, next)=> {
+    const user = await User.findOne({
+        _id: req.params.id
+    })
+    if(!user){
+        res.status(404).json({code: 404, message: '사용자를 찾을 수 없습니다.'})
+    }else{
+        user.name = req.body.name || user.name
+        user.email = req.body.email ||user.email
+        user.userId = req.body.userId || user.userId
+        user.password = req.body.password || user.password
+        user.isAdmin = req.body.isAdmin || user.isAdmin
+        user.lastModifiedAt = Date.now()
+
+        const updatedUser = await user.save()
+        const { name, email, userId, isAdmin, createdAt } = updatedUser
+        res.json({
+            code: 200,
+            token:generateToken(user),
+            name, email, userId, isAdmin, createdAt
+        })
+    }
+}))
 
 //사용자정보 삭제
-router.delete('/:id', (req, res, next)=> {
-    res.json('사용자정보 삭제')
-})
+router.delete('/:id',isAuth, Ex_asyncHandler(async (req, res, next)=> {
+    const user = await User.findOneAndDelete(req.params.id)
+    if(!user){
+        res.status(404).json({code: 404, message: '사용자를 찾을 수 없습니다.'})
+    }else{
+        res.status(204).json({code: 204, message: '사용자의 정보가 삭제되었습니다.'})
+    }
+}))
 
 module.exports = router //이거 없으면 데이터 생성 안됨
