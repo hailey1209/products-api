@@ -78,6 +78,7 @@ router.put('/:id', isAuth, Ex_asyncHandler( async (req, res, next)=> {
         product.category = req.body.category || product.category
         product.name = req.body.name || product.name
         product.imgURL = req.body.imgURL || product.imgURL
+        product.description = req.body.description || product.description
         product.lastModifiedAt = Date.now()
         
         const updatedProduct = await product.save()
@@ -91,13 +92,17 @@ router.put('/:id', isAuth, Ex_asyncHandler( async (req, res, next)=> {
 
 //특정상품 삭제
 router.delete('/:id', isAuth, Ex_asyncHandler(async (req, res, next)=> {
-    const product = await Product.findOneAndDelete({
+    const product = await Product.findOne({
         user: req.user._id,
         _id: req.params.id
     })
     if(!product){
         res.status(404).json({ code: 404, message: '해당 상품을 찾을 수 없습니다.'})
     }else{
+        await product.deleteOne({
+            user: req.user._id,
+            _id: req.params.id
+        })
         res.status(204).json({ code: 204, message: '해당 상품이 삭제되었습니다.'})
     }
 }))

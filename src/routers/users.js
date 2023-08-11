@@ -54,9 +54,7 @@ router.post('/logout', (req, res, next) => {
 
 //사용자정보 변경
 router.put('/:id', isAuth, Ex_asyncHandler(async (req, res, next)=> {
-    const user = await User.findOne({
-        _id: req.params.id
-    })
+    const user = await User.findOne({_id: req.params.id})
     if(!user){
         res.status(404).json({code: 404, message: '사용자를 찾을 수 없습니다.'})
     }else{
@@ -79,7 +77,7 @@ router.put('/:id', isAuth, Ex_asyncHandler(async (req, res, next)=> {
 
 //사용자정보 삭제
 router.delete('/:id',isAuth, Ex_asyncHandler(async (req, res, next)=> {
-    const user = await User.findOneAndDelete(req.params.id)
+    const user = await User.findByIdAndDelete(req.params.id)
     if(!user){
         res.status(404).json({code: 404, message: '사용자를 찾을 수 없습니다.'})
     }else{
